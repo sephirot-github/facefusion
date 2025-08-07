@@ -89,15 +89,18 @@ def create_static_model_set(download_scope : DownloadScope) -> ModelSet:
 
 
 def get_inference_pool() -> InferencePool:
-	model_names = [ 'nsfw_1', 'nsfw_2', 'nsfw_3' ]
-	_, model_source_set = collect_model_downloads()
-
-	return inference_manager.get_inference_pool(__name__, model_names, model_source_set)
+	#Esta función manejan los recursos de los modelos, al dejar de usarlos es mejor que no intenten cargar o borrar los modelos NSFW
+	#model_names = [ 'nsfw_1', 'nsfw_2', 'nsfw_3' ]
+	#_, model_source_set = collect_model_downloads()
+	#return inference_manager.get_inference_pool(__name__, model_names, model_source_set)
+	return inference_manager.get_inference_pool(__name__, [], {})
 
 
 def clear_inference_pool() -> None:
-	model_names = [ 'nsfw_1', 'nsfw_2', 'nsfw_3' ]
-	inference_manager.clear_inference_pool(__name__, model_names)
+	#Esta función manejan los recursos de los modelos, al dejar de usarlos es mejor que no intenten cargar o borrar los modelos NSFW
+	#model_names = [ 'nsfw_1', 'nsfw_2', 'nsfw_3' ]
+	#inference_manager.clear_inference_pool(__name__, model_names)
+	inference_manager.clear_inference_pool(__name__, [])
 
 
 def resolve_execution_providers() -> List[ExecutionProvider]:
@@ -119,9 +122,10 @@ def collect_model_downloads() -> Tuple[DownloadSet, DownloadSet]:
 
 
 def pre_check() -> bool:
-	model_hash_set, model_source_set = collect_model_downloads()
-
-	return conditional_download_hashes(model_hash_set) and conditional_download_sources(model_source_set)
+	#comentado para evitar que descargue modelos que evaluan nsfw, como no se necesitan se comenta.
+	#model_hash_set, model_source_set = collect_model_downloads()
+	#return conditional_download_hashes(model_hash_set) and conditional_download_sources(model_source_set)
+	return True
 
 
 def analyse_stream(vision_frame : VisionFrame, video_fps : Fps) -> bool:
@@ -168,11 +172,12 @@ def analyse_video(video_path : str, trim_frame_start : int, trim_frame_end : int
 
 
 def detect_nsfw(vision_frame : VisionFrame) -> bool:
-	is_nsfw_1 = detect_with_nsfw_1(vision_frame)
-	is_nsfw_2 = detect_with_nsfw_2(vision_frame)
-	is_nsfw_3 = detect_with_nsfw_3(vision_frame)
-
-	return is_nsfw_1 and is_nsfw_2 or is_nsfw_1 and is_nsfw_3 or is_nsfw_2 and is_nsfw_3
+	#ya que no se descargan los modelos de detección de nsfw, no es necesario esa evaluación y se retorna false (que no es nsfw)
+	#is_nsfw_1 = detect_with_nsfw_1(vision_frame)
+	#is_nsfw_2 = detect_with_nsfw_2(vision_frame)
+	#is_nsfw_3 = detect_with_nsfw_3(vision_frame)
+	#return is_nsfw_1 and is_nsfw_2 or is_nsfw_1 and is_nsfw_3 or is_nsfw_2 and is_nsfw_3
+	return False
 
 
 def detect_with_nsfw_1(vision_frame : VisionFrame) -> bool:
